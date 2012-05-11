@@ -4,8 +4,12 @@
 
 (defsystem :rnrs-compat
   :serial t
+  :depends-on (:mbe)
   :components ((:file "package")
-               (:file "rnrs-compat")))
+               (:file "package-after")
+               (:file "base")
+               (:file "rnrs-compat")
+               (:file "ext")))
 
 (defmethod perform ((o test-op) (c (eql (find-system :rnrs-compat))))
   (load-system :rnrs-compat)
@@ -15,4 +19,3 @@
            (funcall (_ :fiveam :explain!) result)
            (funcall (_ :fiveam :results-status) result)))
       (error "test-op failed") ))
-

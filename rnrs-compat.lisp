@@ -6,15 +6,6 @@
 
 (in-suite rnrs-compat)
 
-;;; "rnrs-compat" goes here. Hacks and glory await!
-
-(defmacro defun-inline (name (&rest args) &body body)
-  `(progn
-     (declaim (inline ,name))
-     (defun ,name (,@args)
-       ,@body)))
-
-
 ;;; define
 (defun CHECK-ARG-to-DECLARE (expr)
   (destructuring-bind (ignore pred var name) expr
@@ -23,8 +14,8 @@
 
 (defun restify (expr)
   (etypecase expr
-    (symbol (list 'cl:&rest expr))
-    (list (if (tailp () expr)
+    (cl:symbol (list 'cl:&rest expr))
+    (cl:list (if (tailp () expr)
               expr
               (let ((last (last expr)))
                 (append (butlast expr)
@@ -34,7 +25,7 @@
 
 (defmacro define (name&args &body body)
   (etypecase name&args
-    (list (destructuring-bind (name &rest args)
+    (cl:list (destructuring-bind (name &rest args)
                               name&args
             (destructuring-bind (decl &rest body) body
               (if (cl:string= 'check-arg (car decl))
@@ -48,125 +39,649 @@
                        ,decl
                        ,@body)
                      )))))
-    (symbol `(progn
+    (cl:symbol `(progn
                (setf (symbol-function ',name&args) (progn ,@body))
                ))))
 
-(defun to-proper-lambda-list (list)
-  (typecase list
-    (list (if (tailp () list)
-              list
-              (cl:let ((last (last list)))
-                `(,@(butlast list)
-                      ,(car last)
-                    cl:&rest
-                    ,(cdr last)))))
-    (symbol `(cl:&rest ,list))))
+#|(format t "~{;; ~A~%(defun ~:*~A ()~% )~3%~}"
+        (sort (copy-list  (set-difference
+                            *r5rs-symbols*
+                            *intersection-of-cl-r5rs-symbols*)) #'string<)
+        #|(subseq
+         0 10)|#)|#
+;; ...
 
-(defmacro lambda (args &rest body)
-  `(cl:lambda ,(to-proper-lambda-list args)
-     ,@body))
+;; ANGLE
+(defsynonymfun ANGLE cl:phase)
 
-;;; B
-(defmacro begin (&body body)
+
+;; ASSQ
+(defun ASSQ (item alist)
+  (cl:assoc item alist :test #'eq?))
+
+
+;; ASSV
+(defun ASSV (item alist)
+  (cl:assoc item alist :test #'eqv?))
+
+
+;; BEGIN
+(defmacro BEGIN (&body body)
   `(progn ,@body))
 
-;;; C
-(define char=? #'cl:char=)
-(define char<? #'cl:char<)
-(define char-ci<? #'cl:char-lessp)
-(define char-ci=? #'cl:char-equal)
-(define char? #'cl:characterp)
 
-;;; D
+;; BOOLEAN?
+(defun BOOLEAN? (obj)
+  (cl:typep obj '(cl:member cl:t cl:nil)))
+
+
+;; CALL-WITH-CURRENT-CONTINUATION
+(defun CALL-WITH-CURRENT-CONTINUATION ()
+ )
+
+
+;; CALL-WITH-INPUT-FILE
+(defun CALL-WITH-INPUT-FILE ()
+ )
+
+
+;; CALL-WITH-OUTPUT-FILE
+(defun CALL-WITH-OUTPUT-FILE ()
+ )
+
+
+;; CALL-WITH-VALUES
+(defun CALL-WITH-VALUES (producer consumer)
+  (multiple-value-call consumer (funcall producer)))
+
+;; CHAR->INTEGER
+(defsynonymfun CHAR->INTEGER cl:digit-char-p)
+
+
+;; CHAR-ALPHABETIC?
+(defun CHAR-ALPHABETIC? (char)
+  (and (not (digit-char-p char))
+       (alphanumericp char)))
+
+
+;; CHAR-CI<=?
+(defsynonymfun CHAR-CI<=? cl:char-not-greaterp)
+
+
+;; CHAR-CI<?
+(defsynonymfun CHAR-CI<? cl:char-lessp)
+
+
+;; CHAR-CI=?
+(defsynonymfun CHAR-CI=? cl:char-equal)
+
+
+;; CHAR-CI>=?
+(defsynonymfun CHAR-CI>=? cl:char-not-lessp)
+
+
+;; CHAR-CI>?
+(defsynonymfun CHAR-CI>? cl:char-greaterp)
+
+
+;; CHAR-LOWER-CASE?
+(defsynonymfun CHAR-LOWER-CASE? cl:lower-case-p)
+
+
+;; CHAR-NUMERIC?
+(defun CHAR-NUMERIC? (char)
+  (and (digit-char-p char) t))
+
+
+;; CHAR-READY?
+(defun CHAR-READY? ()
+ )
+
+
+;; CHAR-UPPER-CASE?
+(defsynonymfun CHAR-UPPER-CASE? cl:upper-case-p)
+
+
+;; CHAR-WHITESPACE?
+(defun CHAR-WHITESPACE? (char)
+  (declare (cl:character char))
+  (typep char '(cl:member #\Space #\Newline #\Tab #\Return #\Page)))
+
+
+;; CHAR<=?
+(defsynonymfun CHAR<=? cl:char<=)
+
+
+;; CHAR<?
+(defsynonymfun CHAR<? cl:char<)
+
+
+;; CHAR=?
+(defsynonymfun CHAR=? cl:char=)
+
+
+;; CHAR>=?
+(defsynonymfun CHAR>=? cl:char>=)
+
+
+;; CHAR>?
+(defsynonymfun CHAR? cl:characterp)
+
+
+;; CHAR?
+(defsynonymfun CHAR? cl:characterp)
+
+
+;; CLOSE-INPUT-PORT
+(defun CLOSE-INPUT-PORT ()
+ )
+
+
+;; CLOSE-OUTPUT-PORT
+(defun CLOSE-OUTPUT-PORT ()
+ )
+
+
+;; COMPLEX?
+(defsynonymfun COMPLEX? cl:numberp)
+
+
+;; CURRENT-INPUT-PORT FIXME
+(defun CURRENT-INPUT-PORT ()
+  *standard-input*)
+
+
+;; CURRENT-OUTPUT-PORT FIXME
+(defun CURRENT-OUTPUT-PORT ()
+  *standard-output*)
+
+
+;; DEFINE
+
+
+;; DEFINE-SYNTAX
+
+
+;; DELAY
+(defun DELAY ()
+ )
+
+
+;; DISPLAY
 (defun-inline display (obj)
   (princ obj))
 
-;;; E
-(defun-inline eq? (x y) (eq x y))
 
-(defun-inline equal? (x y)
-  (equal x y))
+;; DYNAMIC-WIND
+(defun DYNAMIC-WIND (in body out)
+  (declare (function in body out))
+  (funcall in)
+  (unwind-protect (funcall body)
+    (funcall out) ))
 
-(define exact? #'cl:rationalp)
 
-;;; I
-(define integer? #'cl:integerp)
+;; ELSE
 
-;;; M
-(defun-inline map (function list &rest more-list)
-  (apply #'mapcar function list more-list))
 
-(defun-inline memq (x list)
-  (cl:member x list :test #'eq))
+;; EOF-OBJECT?
+(defun EOF-OBJECT? (obj)
+  (eq obj (eof-object)) )
 
-(defun make-string (len)
-  (cl:make-string len))
 
-;;; N
-(defun-inline null? (obj) (null obj))
+;; EVEN?
+(defsynonymfun EVEN? cl:evenp)
 
-(defun-inline newline ()
+
+;; EXACT->INEXACT
+(defun EXACT->INEXACT (n)
+  (float n 0d0) )
+
+
+;; EXACT?
+(defsynonymfun EXACT? cl:rationalp)
+
+
+;; FOR-EACH
+(defun FOR-EACH (fn cl:&rest lists)
+  (cl:apply #'cl:mapc fn lists)
+  nil )
+
+
+;; FORCE
+(defun FORCE ()
+ )
+
+
+;; IMAG-PART
+(defsynonymfun IMAG-PART cl:imagpart)
+
+
+;; INEXACT->EXACT
+(defun INEXACT->EXACT (n)
+  (rationalize n))
+
+
+;; INEXACT?
+(defun INEXACT? (n)
+  (floatp n))
+
+
+;; INPUT-PORT?
+(defun INPUT-PORT? (port)
+  (and (streamp port)
+       (input-stream-p port)))
+
+
+;; INTEGER->CHAR
+(defsynonymfun INTEGER->CHAR cl:digit-char)
+
+
+;; INTEGER?
+(defun integer? (n)
+  (or (zerop n)
+      (integerp n)
+      (and (not (= (* 2 n) n))
+           (= (truncate n) n)) ))
+
+
+;; INTERACTION-ENVIRONMENT
+(defun INTERACTION-ENVIRONMENT ()
+  nil)
+
+
+;; LET-SYNTAX
+
+
+;; LETREC
+(defmacro letrec ((&rest binds) &body body)
+  `(let (,@(mapcar (cl:lambda (x)
+                     `(,(car x) #'cl:values) )
+             binds ))
+     (declare (optimize (debug 1) (space 3)))
+     (labels (,@(remove nil
+                  (mapcar (cl:lambda (x &aux (name (car x)))
+                            `(,name
+                              (&rest args)
+                              (declare (dynamic-extent args))
+                              (the (cl:values &rest t) (cl:apply ,name args)) ))
+                          binds )))
+       (psetq ,@(cl:apply #'append binds))
+       ,@body )))
+
+
+;; LETREC-SYNTAX
+
+
+;; LIST->STRING
+(defun LIST->STRING (list)
+  (coerce list 'cl:string))
+
+
+;; LIST->VECTOR
+(defun-inline list->vector (obj)
+  (declare (cl:list obj))
+  (coerce obj 'cl:vector))
+
+
+;; LIST-REF
+(defun LIST-REF (list k)
+  (cl:nth k list))
+
+
+;; LIST-TAIL
+(defun LIST-TAIL (list k)
+  (cl:nthcdr k list))
+
+
+;; LIST?
+(defun LIST? (obj)
+  (and (cl:listp obj)
+       (tailp () obj)))
+
+
+;; MAGNITUDE
+(defsynonymfun magnitude cl:abs)
+
+
+;; MAKE-POLAR
+(defun MAKE-POLAR (r th)
+  (* r (cis th)))
+
+
+;; MAKE-RECTANGULAR
+(defsynonymfun MAKE-RECTANGULAR cl:complex)
+
+
+;; MAKE-VECTOR
+(defun MAKE-VECTOR (size &optional (init 0))
+  (cl:make-array size                   ;***
+                 :initial-element init
+                 :adjustable nil
+                 :fill-pointer nil))
+
+
+;; MEMQ
+(defun-inline MEMQ (x list)
+  (cl:member x list :test #'eq?))
+
+
+;; MEMV
+(defun-inline MEMV (x list)
+  (cl:member x list :test #'eqv?))
+
+
+;; MODULO
+(defsynonymfun MODULO cl:mod)
+
+
+;; NEWLINE
+(defun-inline NEWLINE ()
   (terpri))
 
-;;; P
-(defun-inline pair? (obj) (consp obj))
 
-(define procedure? #'cl:functionp)
+;; NULL-ENVIRONMENT
+(defun NULL-ENVIRONMENT ()
+  nil)
 
-;;; S
+
+;; NULL?
+(defun-inline NULL? (obj) (null obj))
+
+
+;; NUMBER->STRING
+(defun NUMBER->STRING (number &optional (radix 10) use-upper?)
+  (funcall (if use-upper? #'cl:string-upcase #'string-downcase)
+           (write-to-string number :base radix)))
+
+
+;; NUMBER?
+(defsynonymfun NUMBER? cl:numberp)
+
+
+;; ODD?
+(defsynonymfun odd? cl:oddp)
+
+
+;; OPEN-INPUT-FILE
+;;  filename :key if-does-not-exist element-type encoding
+(defun OPEN-INPUT-FILE (filename &key
+                                 if-does-not-exist
+                                 (element-type 'base-char)
+                                 (encoding :default))
+  (cl:open filename
+           :direction :input
+           :if-does-not-exist if-does-not-exist
+           :element-type element-type
+           :external-format encoding))
+
+
+;; OPEN-OUTPUT-FILE
+;; filename :key if-does-not-exist if-exists element-type encoding
+(defun OPEN-OUTPUT-FILE (filename &key
+                                  if-does-not-exist
+                                  if-exists
+                                  (element-type 'base-char)
+                                  (encoding :default))
+  (cl:open filename
+           :direction :input
+           :if-exists if-exists
+           :if-does-not-exist if-does-not-exist
+           :element-type element-type
+           :external-format encoding))
+
+
+;; OUTPUT-PORT?
+(defun OUTPUT-PORT? (port)
+  (and (streamp port)
+       (output-stream-p port)))
+
+
+;; PAIR?
+(defun-inline PAIR? (obj) (consp obj))
+
+
+;; PORT?
+(defsynonymfun PORT? cl:streamp)
+
+
+;; POSITIVE?
+(defsynonymfun POSITIVE? cl:plusp)
+
+
+;; PROCEDURE?
+(defsynonymfun PROCEDURE? cl:functionp)
+
+
+;; QUASIQUOTE
+(defun QUASIQUOTE ()
+  )
+
+
+;; QUOTIENT
+(defun QUOTIENT (x y)
+  (cl:values (cl:truncate x y)))
+
+
+;; RATIONAL?
+(defsynonymfun RATIONAL? cl:realp)
+
+
+;; REAL-PART
+(defsynonymfun REAL-PART cl:realpart)
+
+
+;; REAL?
+(defun REAL? (n)
+  (and (numberp n)
+       (or (realp n)
+           (zerop (cl:imagpart n)))))
+
+
+;; REMAINDER
+(defsynonymfun REMAINDER cl:rem)
+
+
+;; SCHEME-REPORT-ENVIRONMENT
+(defun SCHEME-REPORT-ENVIRONMENT ()
+  nil)
+
+
+;; SET!
 (defmacro set! (var val)
   `(setq ,var ,val))
 
-(defun-inline set-car! (list obj)
-  (rplaca list obj))
 
-(defun-inline set-cdr! (cons x)
-  (rplacd cons x))
+;; SET-CAR!
+(defun SET-CAR! (list obj)
+  (cl:rplaca list obj))
 
-(define any #'cl:some)
 
-(define string? #'cl:stringp)
+;; SET-CDR!
+(defun SET-CDR! (cons x)
+  (cl:rplacd cons x))
 
-(defun string-length (str)
-  (declare (optimize (safety 3) (speed 3)))
+
+;; STRING->LIST
+(defun STRING->LIST (string)
+  (coerce string 'cl:list))
+
+
+;; STRING->NUMBER FIXME
+(defun STRING->NUMBER (string &optional (radix 10))
+  (let ((*read-base* radix)
+        (*read-eval* nil)
+        (*read-default-float-format* 'single-float))
+    (let ((number? (with-input-from-string (in string)
+                     (cl:read in nil nil))))
+      (and (numberp number?)
+           number?))))
+
+
+;; STRING->SYMBOL FIXME
+(defsynonymfun STRING->SYMBOL cl:intern)
+
+
+;; STRING-APPEND
+(defun STRING-APPEND (&rest strings)
+  (cl:format nil "~{~A~}" strings))
+
+
+;; STRING-CI<=?
+(defsynonymfun STRING-CI<=? cl:string-not-greaterp)
+
+
+;; STRING-CI<?
+(defsynonymfun STRING-CI<? cl:string-lessp)
+
+
+;; STRING-CI=?
+(defsynonymfun STRING-CI=? cl:string-equal)
+
+
+;; STRING-CI>=?
+(defsynonymfun STRING-CI>=? cl:string-not-lessp)
+
+
+;; STRING-CI>?
+(defsynonymfun STRING-CI>? cl:string-greaterp)
+
+
+;; STRING-COPY
+(defsynonymfun STRING-COPY cl:copy-seq)
+
+
+;; STRING-FILL!
+(defsynonymfun STRING-FILL! cl:fill)
+
+
+;; STRING-LENGTH
+(defun-inline STRING-LENGTH (str)
   (declare (simple-string  str))
   (length str))
 
-(defun string-set! (string k char)
-  (declare (optimize (safety 3) (speed 3)))
-  (declare (simple-string  string))
-  (setf (char string k) char))
 
-(defun string-ref (string k)
-  (declare (optimize (safety 3) (speed 3)))
+;; STRING-REF
+(defun-inline STRING-REF (string k)
   (declare (simple-string string))
   (char string k))
 
-(defun substring (str start end)
-  (declare (optimize (safety 3) (speed 3)))
+
+;; STRING-SET!
+(defun-inline string-set! (string k char)
+  (declare (simple-string  string))
+  (setf (char string k) char))
+
+
+;; STRING<=?
+(defsynonymfun STRING<=? cl:string<=)
+
+
+;; STRING<?
+(defsynonymfun STRING<? cl:string<)
+
+
+;; STRING=?
+(defsynonymfun STRING=? cl:string=)
+
+
+;; STRING>=?
+(defsynonymfun STRING>=? cl:string>=)
+
+
+;; STRING>?
+(defsynonymfun STRING>? cl:string>)
+
+
+;; STRING?
+(defsynonymfun STRING? cl:stringp)
+
+
+;; SUBSTRING
+(defun-inline SUBSTRING (str start end)
   (declare (simple-string  str))
   (subseq str start end))
 
-;;; V
-(defun vector-length (vec)
-  (declare (optimize (safety 3) (speed 3)))
-  (declare (vector vec))
+
+;; SYMBOL->STRING
+(defsynonymfun SYMBOL->STRING cl:string)
+
+
+;; SYMBOL?
+(defsynonymfun SYMBOL? cl:symbolp)
+
+
+;; SYNTAX-RULES
+
+
+;; VECTOR->LIST
+(defun-inline vector->list (obj)
+  (declare (cl:vector obj))
+  (cl:coerce obj 'cl:list))
+
+
+;; VECTOR-FILL!
+(defsynonymfun VECTOR-FILL! cl:fill)
+
+
+;; VECTOR-LENGTH
+(defun-inline VECTOR-LENGTH (vec)
+  (declare (cl:vector vec))
   (length vec))
 
-(defun vector-ref (vec index)
-  (declare (optimize (safety 3) (speed 3)))
-  (declare (vector vec)
+
+;; VECTOR-REF
+(defun-inline vector-ref (vec index)
+  (declare (cl:vector vec)
            (fixnum index))
   (aref vec index))
 
-(defun vector-set! (vec index value)
-  (declare (optimize (safety 3) (speed 3)))
-  (declare (vector vec)
-           (fixnum index))
+
+;; VECTOR-SET!
+(defun-inline VECTOR-SET! (vec index value)
+  (declare (cl:vector vec) (fixnum index))
   (setf (aref vec index) value))
 
-;;; Z
-(defun-inline zero? (x) (zerop x))
+
+;; VECTOR?
+(defsynonymfun VECTOR? cl:vectorp)
+
+
+;; WITH-INPUT-FROM-FILE
+;; filename thunk :key if-does-not-exist element-type encoding
+(defun WITH-INPUT-FROM-FILE (filename thunk
+                                      &key
+                                      if-does-not-exist
+                                      (element-type 'base-char)
+                                      (encoding :default))
+  (with-open-stream (in (cl:open filename
+                                 :direction :input
+                                 :if-does-not-exist if-does-not-exist
+                                 :element-type element-type
+                                 :external-format encoding))
+    (funcall thunk in)))
+
+
+;; WITH-OUTPUT-TO-FILE
+(defun WITH-OUTPUT-TO-FILE (filename thunk
+                                     &key
+                                     if-does-not-exist
+                                     if-exists
+                                     (element-type 'base-char)
+                                     (encoding :default))
+  (with-open-stream (out (cl:open filename
+                                  :direction :input
+                                  :if-exists if-exists
+                                  :if-does-not-exist if-does-not-exist
+                                  :element-type element-type
+                                  :external-format encoding))
+    (funcall thunk out)))
+
+
+
+;; ZERO?
+(defun-inline ZERO? (x) (zerop x))
+
+;; (defsynonymfun any cl:some)
+;; (defsynonymfun keyword? #'keywordp)
 
 ;;; eof
