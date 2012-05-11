@@ -5,6 +5,7 @@
 (defpackage :rnrs-compat
   (:use :mbe)
   (:nicknames :rnrs)
+  (:intern :loop)
   (:export
    :* :+ :- :|...| :/  :< :<= := :=> :> :>= :abs :acos
    :and :angle :append :apply :asin :assoc :assq :assv :atan :begin

@@ -11,12 +11,14 @@
    :caar :let* := :apply :rationalize :cddddr :member :make-string :length :acos
    :* :< :not :car :+ :load :cond :append :sqrt :lcm :truncate :read :case :and
    :reverse )
+  (:shadowing-import-from :rnrs-compat :loop)
   (:export . #.(let ((ans '()))
                  (do-external-symbols (s :cl)
                    (push s ans))
                  (do-external-symbols (s :rnrs-compat)
                    (push s ans))
                  (mapcar (lambda (s) (intern (string s) :keyword)) ans))))
+
 
 (defpackage :rnrs-compat-internal
   (:use :rnrs-user :fiveam))
