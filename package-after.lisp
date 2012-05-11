@@ -12,6 +12,9 @@
    :* :< :not :car :+ :load :cond :append :sqrt :lcm :truncate :read :case :and
    :reverse )
   (:shadowing-import-from :rnrs-compat :loop)
+  (:export :define-function
+           :with-local-define-function
+           :with-local-define-variable)
   (:export . #.(let ((ans '()))
                  (do-external-symbols (s :cl)
                    (push s ans))

@@ -28,7 +28,7 @@
    :open-output-file :or :output-port? :pair? :peek-char :port? :positive?
    :procedure? :quasiquote :quote :quotient :rational? :rationalize :read
    :read-char :real-part :real? :remainder :reverse :round
-   :scheme-report-environment :set! :set-car! :set-cdr! :setcar :sin :sqrt
+   :scheme-report-environment :set! :set-car! :set-cdr! :sin :sqrt
    :string :string->list :string->number :string->symbol :string-append
    :string-ci<=? :string-ci<? :string-ci=? :string-ci>=? :string-ci>?
    :string-copy :string-fill! :string-length :string-ref :string-set! :string<=?

@@ -226,8 +226,8 @@
 
 
 ;; DISPLAY
-(defun-inline display (obj)
-  (princ obj))
+(defun-inline display (obj &optional (port (current-output-port)))
+  (princ obj port))
 
 
 ;; DYNAMIC-WIND
@@ -391,6 +391,8 @@
 ;; MODULO
 (defsynonymfun MODULO cl:mod)
 
+;;; NEGATIVE?
+(defsynonymfun NEGATIVE? cl:minusp)
 
 ;; NEWLINE
 (defun-inline NEWLINE ()
