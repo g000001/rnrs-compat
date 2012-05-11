@@ -81,13 +81,33 @@
 
 
 ;; CALL-WITH-INPUT-FILE
-(defun CALL-WITH-INPUT-FILE ()
- )
+(defun CALL-WITH-INPUT-FILE (filename proc
+                                      &key
+                                      if-does-not-exist
+                                      (element-type 'base-char)
+                                      (encoding :default))
+  (with-open-stream (in (cl:open filename
+                                 :direction :input
+                                 :if-does-not-exist if-does-not-exist
+                                 :element-type element-type
+                                 :external-format encoding))
+    (funcall proc in)))
 
 
 ;; CALL-WITH-OUTPUT-FILE
-(defun CALL-WITH-OUTPUT-FILE ()
- )
+(defun CALL-WITH-OUTPUT-FILE (filename thunk
+                                       &key
+                                       if-does-not-exist
+                                       if-exists
+                                       (element-type 'base-char)
+                                       (encoding :default))
+  (with-open-stream (out (cl:open filename
+                                  :direction :input
+                                  :if-exists if-exists
+                                  :if-does-not-exist if-does-not-exist
+                                  :element-type element-type
+                                  :external-format encoding))
+    (funcall thunk out)))
 
 
 ;; CALL-WITH-VALUES
@@ -653,12 +673,12 @@
                                       if-does-not-exist
                                       (element-type 'base-char)
                                       (encoding :default))
-  (with-open-stream (in (cl:open filename
-                                 :direction :input
-                                 :if-does-not-exist if-does-not-exist
-                                 :element-type element-type
-                                 :external-format encoding))
-    (funcall thunk in)))
+  (with-open-stream (*standard-input* (cl:open filename
+                                               :direction :input
+                                               :if-does-not-exist if-does-not-exist
+                                               :element-type element-type
+                                               :external-format encoding))
+    (funcall thunk)))
 
 
 ;; WITH-OUTPUT-TO-FILE
@@ -668,13 +688,13 @@
                                      if-exists
                                      (element-type 'base-char)
                                      (encoding :default))
-  (with-open-stream (out (cl:open filename
-                                  :direction :input
-                                  :if-exists if-exists
-                                  :if-does-not-exist if-does-not-exist
-                                  :element-type element-type
-                                  :external-format encoding))
-    (funcall thunk out)))
+  (with-open-stream (*standard-output* (cl:open filename
+                                                :direction :input
+                                                :if-exists if-exists
+                                                :if-does-not-exist if-does-not-exist
+                                                :element-type element-type
+                                                :external-format encoding))
+    (funcall thunk)))
 
 
 
