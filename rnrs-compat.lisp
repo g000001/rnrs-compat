@@ -193,13 +193,11 @@
 
 
 ;; CLOSE-INPUT-PORT
-(defun CLOSE-INPUT-PORT ()
- )
+(defsynonymfun CLOSE-INPUT-PORT cl:close)
 
 
 ;; CLOSE-OUTPUT-PORT
-(defun CLOSE-OUTPUT-PORT ()
- )
+(defsynonymfun CLOSE-OUTPUT-PORT cl:close)
 
 
 ;; COMPLEX?
