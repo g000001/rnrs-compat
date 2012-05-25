@@ -6,6 +6,7 @@
   (:use :mbe)
   (:nicknames :rnrs)
   (:intern :loop)
+  (:import-from :keyword :else)
   (:export
    :* :+ :- :|...| :/  :< :<= := :=> :> :>= :abs :acos
    :and :angle :append :apply :asin :assoc :assq :assv :atan :begin
