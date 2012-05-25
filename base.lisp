@@ -141,10 +141,34 @@
 (defsynonymclfun CADR)
 
 ;; CAR
-(defsynonymclfun CAR)
+(defun CAR (list)
+  (cl:car (the cl:cons list)))
 
 ;; CASE
 (defsynonymclfun CASE)
+#|(define-syntax case
+  (syntax-rules (else)
+    ((case expr0
+       ((key ***) res1 res2 ***)
+       ***
+       (else else-res1 else-res2 ***) )
+     (mbe:with ((tmp (gensym)))
+       (let ((tmp expr0))
+         (cond
+           ((memv tmp '(key ***)) res1 res2 ***)
+           ***
+           (else else-res1 else-res2 ***) ))))
+    ((case expr0
+       ((keya ***) res1a res2a ***)
+       ((keyb ***) res1b res2b ***)
+       *** )
+     (mbe:with ((tmp (gensym)))
+       (let ((tmp expr0))
+         (cond
+           ((memv tmp '(keya ***)) res1a res2a ***)
+           ((memv tmp '(keyb ***)) res1b res2b ***)
+           *** ))))))|#
+
 
 ;; CDDDAR
 (defsynonymclfun CDDDAR)
@@ -165,7 +189,63 @@
 (defsynonymclfun CHAR-UPCASE)
 
 ;; COND
-(defsynonymclfun COND)
+;; (defsynonymclfun COND)
+
+(define-syntax cond
+  (syntax-rules (:else =>)
+    ((cond (:else result1 result2 ***))
+     (progn result1 result2 ***))
+    ((cond (test => result))
+     (mbe:with ((temp (gensym)))
+       (let ((temp test))
+         (if temp (result temp)))))
+    ((cond (test => result) clause1 clause2 ***)
+     (mbe:with ((temp (gensym)))
+       (let ((temp test))
+         (if temp
+             (result temp)
+             (cond clause1 clause2 ***)))))
+    ((cond (test)) test)
+    ((cond (test) clause1 clause2 ***)
+     (mbe:with ((temp (gensym)))
+       (let ((temp test))
+         (if temp
+             temp
+             (cond clause1 clause2 ***)))))
+    ((cond (test result1 result2 ***))
+     (if test (progn result1 result2 ***)))
+    ((cond (test result1 result2 ***)
+           clause1 clause2 ***)
+     (if test
+         (progn result1 result2 ***)
+         (cond clause1 clause2 ***)))))
+
+#|(defmacro cond (r c &rest clauses)
+  (labels ((recur (clauses)
+             (if (null? clauses)
+                 (funcall r 'unspecific)
+                 (process-cond-clause r c
+                                      (car clauses)
+                                      (recur (cdr clauses)) ))))
+    (recur clauses)))|#
+
+
+; Auxiliary also used by DO
+
+#|(defun process-cond-clause (r c clause rest)
+  (cl:cond ((null? (cdr clause))
+            `(,(funcall r 'or-aux) ,(car clause)
+               (,(funcall r 'lambda) () ,rest) ))
+           ((funcall c (car clause) (funcall r 'else))
+            `(,(funcall r 'begin) ,@(cdr clause)) )
+           ((funcall c (cadr clause) (funcall r '=>))
+            `(,(funcall r '=>-aux) ,(car clause)
+               (,(funcall r 'lambda) () ,(caddr clause))
+               (,(funcall r 'lambda) () ,rest) ))
+           (:else
+            `(,(funcall r 'if) ,(car clause)
+               (,(funcall r 'begin) ,@(cdr clause))
+               ,rest ))))|#
 
 ;; CONS
 (defsynonymclfun CONS)
@@ -215,8 +295,8 @@
 (defsynonymclfun GCD)
 
 ;; IF
-(defmacro IF (pred then &optional else)
-  `(cl:if ,pred ,then ,else))
+(defmacro IF (pred then &optional *else)
+  `(cl:if ,pred ,then ,*else))
 
 ;; LAMBDA
 (cl:eval-when (:compile-toplevel :load-toplevel :execute)
