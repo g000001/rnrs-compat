@@ -663,8 +663,8 @@
 
 
 ;; VECTOR?
-(defsynonymfun VECTOR? cl:vectorp)
-
+(defun-inline VECTOR? (obj)
+  (typep obj '(cl:and cl:vector (cl:not cl:string))))
 
 ;; WITH-INPUT-FROM-FILE
 ;; filename thunk :key if-does-not-exist element-type encoding
