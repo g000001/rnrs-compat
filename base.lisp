@@ -129,7 +129,11 @@
 
 ;; ASSOC
 (defun ASSOC (item alist)
-  (cl:assoc item alist :test #'equal?))
+  (cl:loop
+     :for e :on alist
+     :when (and (cl:consp (car e))
+                (equal? item (caar e)))
+       :return (car e)))
 
 ;; ATAN
 (defsynonymclfun ATAN)

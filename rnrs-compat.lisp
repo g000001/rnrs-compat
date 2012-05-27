@@ -57,10 +57,20 @@
 
 ;; ASSQ
 (defun ASSQ (item alist)
-  (cl:assoc item alist :test #'eq?))
-
+  (cl:loop
+     :for e :on alist
+     :when (and (cl:consp (car e))
+                (eq? item (caar e)))
+       :return (car e)))
 
 ;; ASSV
+(defun ASSV (item alist)
+  (cl:loop
+     :for e :on alist
+     :when (and (cl:consp (car e))
+                (eqv? item (caar e)))
+       :return (car e)))
+
 (defun ASSV (item alist)
   (if (tailp '() alist)
       (cl:assoc item alist :test #'eqv?)
