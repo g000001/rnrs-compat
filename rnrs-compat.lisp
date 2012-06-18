@@ -71,13 +71,6 @@
                 (eqv? item (caar e)))
        :return (car e)))
 
-(defun ASSV (item alist)
-  (if (tailp '() alist)
-      (cl:assoc item alist :test #'eqv?)
-      (cl:assoc item (append (butlast alist)
-                             (list (car (last alist))))
-                :test #'eqv?)))
-
 ;; BEGIN
 (defmacro BEGIN (&body body)
   `(progn ,@body))
