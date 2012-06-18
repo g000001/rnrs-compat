@@ -452,8 +452,8 @@
 ;; filename :key if-does-not-exist if-exists element-type encoding
 (defun OPEN-OUTPUT-FILE (filename &key
                                   (if-does-not-exist :create)
-                                  if-exists
-                                  (element-type 'character)
+                                  (if-exists :error)
+                                  (element-type 'base-char)
                                   (encoding :default))
   (cl:open filename
            :direction :output
