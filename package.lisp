@@ -18,6 +18,7 @@
    :char=? :char>=? :char>? :char? :close-input-port :close-output-port :complex?
    :cond :cons :cos :current-input-port :current-output-port :define
    :define-syntax :delay :denominator :display :do :dynamic-wind :else
+   :eof-object
    :eof-object? :eq? :equal? :eqv? :eval :even? :exact->inexact :exact? :exp
    :expt :floor :for-each :force :gcd :if :imag-part :inexact->exact
    :inexact? :input-port? :integer->char :integer? :interaction-environment
