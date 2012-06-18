@@ -302,10 +302,11 @@
 
 ;; INTEGER?
 (defun integer? (n)
-  (or (and (numberp n) (zerop n))
-      (integerp n)
-      (and (not (= (* 2 n) n))
-           (= (truncate n) n)) ))
+  (and (numberp n)
+       (or (zerop n)
+           (integerp n)
+           (and (not (= (* 2 n) n))
+                (= (truncate n) n)) )))
 
 
 ;; INTERACTION-ENVIRONMENT
