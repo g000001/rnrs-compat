@@ -309,7 +309,7 @@
 
 ;; INTEGER?
 (defun integer? (n)
-  (or (zerop n)
+  (or (and (numberp n) (zerop n))
       (integerp n)
       (and (not (= (* 2 n) n))
            (= (truncate n) n)) ))
