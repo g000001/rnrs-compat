@@ -149,7 +149,10 @@
   (cl:car (the cl:cons list)))
 
 ;; CASE
-(defsynonymclfun CASE)
+(defmacro CASE (item &body clauses)
+  `(cl:case ,item
+     ,@clauses))
+
 #|(define-syntax case
   (syntax-rules (else)
     ((case expr0
