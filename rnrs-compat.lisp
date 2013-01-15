@@ -25,23 +25,26 @@
 
 (defmacro define (name&args &body body)
   (etypecase name&args
-    (cl:list (destructuring-bind (name &rest args)
-                              name&args
-            (destructuring-bind (decl &rest body) body
-              (if (cl:string= 'check-arg (car decl))
-                  `(eval-when (:compile-toplevel :load-toplevel :execute)
-                     (defun ,name (,@(restify args))
-                       ,(CHECK-ARG-to-DECLARE decl)
-                       ,@body)
-                     )
-                  `(eval-when (:compile-toplevel :load-toplevel :execute)
-                     (defun ,name (,@(restify args))
-                       ,decl
-                       ,@body)
-                     )))))
+    (() `(eval-when (:compile-toplevel :load-toplevel :execute)
+           (defun ,(car name&args) ()
+             ,@body)))
+    (cl:cons (destructuring-bind (name &rest args)
+                                 name&args
+               (destructuring-bind (decl &rest body) body
+                 (if (cl:string= 'check-arg (car decl))
+                     `(eval-when (:compile-toplevel :load-toplevel :execute)
+                        (defun ,name (,@(restify args))
+                          ,(CHECK-ARG-to-DECLARE decl)
+                          ,@body)
+                        )
+                     `(eval-when (:compile-toplevel :load-toplevel :execute)
+                        (defun ,name (,@(restify args))
+                          ,decl
+                          ,@body)
+                        )))))
     (cl:symbol `(progn
-               (setf (symbol-function ',name&args) (progn ,@body))
-               ))))
+                  (setf (symbol-function ',name&args) (progn ,@body))
+                  ))))
 
 #|(format t "~{;; ~A~%(defun ~:*~A ()~% )~3%~}"
         (sort (copy-list  (set-difference
