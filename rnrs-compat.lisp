@@ -24,7 +24,7 @@
                               (cdr last))))))))
 
 (defmacro define (name&args &body body)
-  (etypecase (print name&args)
+  (etypecase name&args
     ((cl:cons cl:t cl:null)
      `(eval-when (:compile-toplevel :load-toplevel :execute)
         (defun ,(car name&args) ()
