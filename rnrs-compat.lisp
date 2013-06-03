@@ -127,7 +127,7 @@
   (multiple-value-call consumer (funcall producer)))
 
 ;; CHAR->INTEGER
-(defsynonymfun CHAR->INTEGER cl:digit-char-p)
+(defsynonymfun CHAR->INTEGER cl:char-code)
 
 
 ;; CHAR-ALPHABETIC?
