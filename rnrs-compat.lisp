@@ -303,7 +303,7 @@
 
 
 ;; INTEGER->CHAR
-(defsynonymfun INTEGER->CHAR cl:digit-char)
+(defsynonymfun INTEGER->CHAR cl:code-char)
 
 
 ;; INTEGER?
