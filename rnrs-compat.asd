@@ -4,12 +4,13 @@
 
 (defsystem :rnrs-compat
   :serial t
-  :depends-on (:mbe)
+  :depends-on (:mbe :quasiquote1)
   :components ((:file "package")
                (:file "package-after")
                (:file "base")
                (:file "rnrs-compat")
-               (:file "ext")))
+               (:file "ext")
+               (:file "readtable")))
 
 (defmethod perform ((o test-op) (c (eql (find-system :rnrs-compat))))
   (load-system :rnrs-compat)
