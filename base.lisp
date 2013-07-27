@@ -318,9 +318,11 @@
                          ,(cdr last)))))
       (cl:symbol `(cl:&rest ,list)))))
 
+
 (defmacro lambda (args &rest body)
   `(cl:lambda ,(to-proper-lambda-list args)
-     ,@body ))
+     ,@(@expand-internal-define body)))
+
 
 ;; LCM
 (defsynonymclfun LCM)
@@ -335,17 +337,18 @@
     (unless (= 2(length x))
       (error "malformed NAMED-LET variable spec: ~S" x)))
   `(labels ((,name ,(mapcar #'cl:first binds) ,@body))
-     (declare (optimize (debug 1) (space 3)))
+     (cl:declare (cl:optimize (cl:debug 1) (cl:space 3)))
      (,name ,@(mapcar #'cl:second binds))))
 
 (defmacro let (&rest args)
   (etypecase (car args)
-    (cl:list `(cl:let ,@args))
+    (cl:list `(cl:let ,(car args)
+                ,@(@expand-internal-define (cdr args))))
     (cl:symbol `(named-let ,@args))))
 
 ;; LET*
 (defmacro LET* ((&rest binds) &body body)
-  `(cl:let* (,@binds) ,@body))
+  `(cl:let* (,@binds) ,@(@expand-internal-define body)))
 
 ;; LIST
 (defsynonymclfun LIST)

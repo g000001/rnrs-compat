@@ -44,4 +44,57 @@
                      (cl:psetq ,@setqs)
                      ,@body )))))
 
+
+(deftype definition-operator ()
+  `(cl:member define internal-define))
+
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun process-scheme-body* (exps &optional name)
+    (labels ((defs+exps (body exps defs decls)
+                 (if (endp body)
+                     (values (reverse exps) (reverse defs) (reverse decls))
+                     (typecase (car body)
+                       ((cl:cons definition-operator cl:*)
+                        (defs+exps (cdr body) exps (cons (car body) defs) decls))
+                       ((cl:cons (eql cl:declare) cl:*)
+                        (defs+exps (cdr body) exps defs (cons (car body) decls)))
+                       (otherwise 
+                        (exps (cdr body) (cons (car body) exps) defs decls)))))
+             (exps (body exps defs decls)
+               (if (endp body)
+                   (values (reverse exps) (reverse defs) (reverse decls))
+                   (typecase (car body)
+                     ((cl:cons definition-operator cl:*)
+                      (cl:error "~:[~;~:*~A: ~]no expression after a sequence of internal definitions" name))
+                     (otherwise 
+                      (exps (cdr body) (cons (car body) exps) defs decls))))))
+      (defs+exps exps '() '() '() )))
+
+  
+  (defun expand-define (expr)
+    (etypecase expr
+      ((cl:cons definition-operator (cl:cons cl:cons))
+       (destructuring-bind ((name &rest args) &rest body)
+                           (cdr expr)
+         `(,name (lambda ,args ,@body))))
+      ((cl:cons definition-operator (cl:cons cl:symbol cl:*))
+       (cdr expr)))))
+
+
+(defun @expand-internal-define (body)
+  (multiple-value-bind (body defs decls)
+                       (process-scheme-body* body)
+    (typecase defs
+      (null `(,@decls 
+              (begin ,@body)))
+      (otherwise `(,@decls
+                   (letrec ,(mapcar #'expand-define defs)
+                     ,@body))))))
+
+
+(defun null-lexenv-p (env)
+  #+sbcl (sb-c::null-lexenv-p env))
+
+
 ;;; eof

@@ -23,31 +23,67 @@
                               'cl:&rest
                               (cdr last))))))))
 
-(defmacro define (name&args &body body)
+
+;; `(eval-when (:compile-toplevel :load-toplevel :execute)
+;;                 (defun ,name (,@(restify args))
+;;                   ,(CHECK-ARG-to-DECLARE decl)
+;;                   ,@(@expand-internal-define body)))
+
+(defmacro global-define (name&args &body body)
   (etypecase name&args
     ((cl:cons cl:t cl:null)
      `(eval-when (:compile-toplevel :load-toplevel :execute)
         (defun ,(car name&args) ()
-          ,@body)))
+          ,@(@expand-internal-define body))))
     (cl:cons
      (destructuring-bind (name &rest args)
                          name&args
-       (destructuring-bind (decl &rest body) body
-         (if (cl:string= 'check-arg (car decl))
-             `(eval-when (:compile-toplevel :load-toplevel :execute)
-                (defun ,name (,@(restify args))
-                  ,(CHECK-ARG-to-DECLARE decl)
-                  ,@body)
-                )
-             `(eval-when (:compile-toplevel :load-toplevel :execute)
-                (defun ,name (,@(restify args))
-                  ,decl
-                  ,@body)
-                )))))
+       `(eval-when (:compile-toplevel :load-toplevel :execute)
+          (defun ,name (,@(restify args))
+            ,@(@expand-internal-define body)))))
     (cl:symbol 
      `(progn
-        (setf (symbol-function ',name&args) (progn ,@body))
-        ))))
+        (setf (symbol-function ',name&args) 
+              ,@body)))))
+
+
+#|(defmacro define (name&args &body body &environment env)
+  (if (null-lexenv-p env)
+      (etypecase name&args
+        ((cl:cons cl:t cl:null)
+         `(eval-when (:compile-toplevel :load-toplevel :execute)
+            (defun ,(car name&args) ()
+              (@with-internal-define
+                ,@body))))
+        (cl:cons
+         (destructuring-bind (name &rest args)
+                             name&args
+           (destructuring-bind (decl &rest body) body
+             (if (cl:string= 'check-arg (car decl))
+                 `(eval-when (:compile-toplevel :load-toplevel :execute)
+                    (defun ,name (,@(restify args))
+                      ,(CHECK-ARG-to-DECLARE decl)
+                      (@with-internal-define 
+                        ,@body))
+                    )
+                 `(eval-when (:compile-toplevel :load-toplevel :execute)
+                    (defun ,name (,@(restify args))
+                      ,decl
+                      (@with-internal-define
+                        ,@body))
+                    )))))
+        (cl:symbol 
+         `(@with-internal-define
+            (setf (symbol-function ',name&args) (progn ,@body))
+            )))
+      `(internal-define ,name&args ,@body)))|#
+
+
+(defmacro define (name&args &body body &environment env)
+  (if (null-lexenv-p env)
+      `(global-define ,name&args ,@body)
+      `(internal-define ,name&args ,@body)))
+
 
 #|(format t "~{;; ~A~%(defun ~:*~A ()~% )~3%~}"
         (sort (copy-list  (set-difference
@@ -325,10 +361,10 @@
 
 ;; LETREC
 (defmacro letrec ((&rest binds) &body body)
-  `(let (,@(mapcar (cl:lambda (x)
+  `(cl:let (,@(mapcar (cl:lambda (x)
                      `(,(car x) #'cl:values) )
              binds ))
-     (declare (optimize (debug 1) (space 3)))
+     (cl:declare (cl:optimize (cl:debug 1) (cl:space 3)))
      (labels (,@(remove nil
                   (mapcar (cl:lambda (x &aux (name (car x)))
                             `(,name
@@ -718,3 +754,4 @@
 ;; (defsynonymfun keyword? #'keywordp)
 
 ;;; eof
+
