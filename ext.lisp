@@ -79,22 +79,22 @@
                            (cdr expr)
          `(,name (lambda ,args ,@body))))
       ((cl:cons definition-operator (cl:cons cl:symbol cl:*))
-       (cdr expr)))))
+       (cdr expr))))
 
-
-(defun @expand-internal-define (body)
-  (multiple-value-bind (body defs decls)
-                       (process-scheme-body* body)
-    (typecase defs
-      (null `(,@decls 
-              (begin ,@body)))
-      (otherwise `(,@decls
-                   (letrec ,(mapcar #'expand-define defs)
-                     ,@body))))))
-
-
-(defun null-lexenv-p (env)
-  #+sbcl (sb-c::null-lexenv-p env))
+  
+  (defun @expand-internal-define (body)
+    (multiple-value-bind (body defs decls)
+                         (process-scheme-body* body)
+      (typecase defs
+        (null `(,@decls 
+                (begin ,@body)))
+        (otherwise `(,@decls
+                     (letrec ,(mapcar #'expand-define defs)
+                       ,@body))))))
+  
+  
+  (defun null-lexenv-p (env)
+    #+sbcl (sb-c::null-lexenv-p env)))
 
 
 ;;; eof
