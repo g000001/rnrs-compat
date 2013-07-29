@@ -7,9 +7,9 @@
   :depends-on (:mbe :quasiquote1)
   :components ((:file "package")
                (:file "package-after")
+               (:file "ext")
                (:file "base")
                (:file "rnrs-compat")
-               (:file "ext")
                (:file "readtable")))
 
 (defmethod perform ((o test-op) (c (eql (find-system :rnrs-compat))))
