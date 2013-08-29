@@ -16,9 +16,9 @@
 
 (defmacro with-local-define-function (&body defines-body)
   (or (cl:member :in defines-body) (error "no body"))
-  (let* ((body-pos (cl:position :in defines-body))
-         (defines  (cl:subseq defines-body 0 body-pos))
-         (body     (cl:subseq defines-body (cl:1+ body-pos))) )
+  (cl:let* ((body-pos (cl:position :in defines-body))
+            (defines  (cl:subseq defines-body 0 body-pos))
+            (body     (cl:subseq defines-body (cl:1+ body-pos))) )
     (cl:loop
        :for (nil name-arg . bo) :in defines
        :collect (cl:let ((name-arg (to-proper-lambda-list name-arg)))

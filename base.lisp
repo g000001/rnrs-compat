@@ -138,6 +138,12 @@
 ;; ATAN
 (defsynonymclfun ATAN)
 
+
+;; BEGIN
+(defmacro begin (&body body)
+  `(progn ,@body))
+
+
 ;; CAAR
 (defsynonymclfun CAAR)
 
