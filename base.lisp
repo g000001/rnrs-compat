@@ -190,7 +190,8 @@
 (defsynonymclfun CDDDDR)
 
 ;; CDR
-(defsynonymclfun CDR)
+(defun CDR (list)
+  (cl:cdr (the cl:cons list)))
 
 ;; CEILING
 (defsynonymclfun CEILING)
