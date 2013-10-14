@@ -31,7 +31,7 @@
 
 (defmacro with-local-define-variable (&body defines-body)
   (or (cl:member :in defines-body) (error "no body"))
-  (let* ((body-pos (cl:position :in defines-body))
+  (cl:let* ((body-pos (cl:position :in defines-body))
          (defines  (cl:subseq defines-body 0 body-pos))
          (body     (cl:subseq defines-body (cl:1+ body-pos))) )
     (cl:loop
