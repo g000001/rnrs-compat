@@ -16,12 +16,12 @@
   (etypecase expr
     (cl:symbol (list 'cl:&rest expr))
     (cl:list (if (tailp () expr)
-              expr
-              (let ((last (last expr)))
-                (append (butlast expr)
-                        (list (car last)
-                              'cl:&rest
-                              (cdr last))))))))
+                 expr
+                 (cl:let ((last (last expr)))
+                   (append (butlast expr)
+                           (list (car last)
+                                 'cl:&rest
+                                 (cdr last))))))))
 
 
 ;; `(eval-when (:compile-toplevel :load-toplevel :execute)
@@ -42,7 +42,7 @@
           (defun ,name (,@(restify args))
             ,@(@expand-internal-define body)))))
     (cl:symbol 
-     `(progn
+     `(eval-when (:compile-toplevel :load-toplevel :execute)
         (setf (symbol-function ',name&args) 
               ,@body)))))
 
@@ -370,7 +370,7 @@
                             `(,name
                               (&rest args)
                               (declare (dynamic-extent args))
-                              (the (cl:values &rest t) (cl:apply ,name args)) ))
+                              (the (cl:values &rest t) (cl:apply ,name args))))
                           binds )))
        (psetq ,@(cl:apply #'append binds))
        ,@body )))
@@ -577,11 +577,11 @@
 
 ;; STRING->NUMBER FIXME
 (defun STRING->NUMBER (string &optional (radix 10))
-  (let ((*read-base* radix)
-        (*read-eval* nil)
-        (*read-default-float-format* 'single-float))
-    (let ((number? (with-input-from-string (in string)
-                     (cl:read in nil nil))))
+  (cl:let ((*read-base* radix)
+           (*read-eval* nil)
+           (*read-default-float-format* 'single-float))
+    (cl:let ((number? (with-input-from-string (in string)
+                        (cl:read in nil nil))))
       (and (numberp number?)
            number?))))
 
