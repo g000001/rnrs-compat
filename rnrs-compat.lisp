@@ -150,7 +150,7 @@
                                        (element-type 'base-char)
                                        (encoding :default))
   (with-open-stream (out (cl:open filename
-                                  :direction :input
+                                  :direction :output
                                   :if-exists if-exists
                                   :if-does-not-exist if-does-not-exist
                                   :element-type element-type
