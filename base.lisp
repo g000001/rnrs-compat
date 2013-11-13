@@ -61,6 +61,12 @@
   (defun eof-object ()
     eof))
 
+
+;; IF
+(defmacro IF (pred then &optional *else)
+  `(cl:if ,pred ,then ,*else))
+
+
 ;; EQ?
 (defun-inline eq? (x y) (eq x y))
 
@@ -212,12 +218,12 @@
     ((cond (test => result))
      (mbe:with ((temp (gensym)))
        (let ((temp test))
-         (if temp (result temp)))))
+         (if temp (cl:funcall result temp)))))
     ((cond (test => result) clause1 clause2 ***)
      (mbe:with ((temp (gensym)))
        (let ((temp test))
          (if temp
-             (result temp)
+             (funcall result temp)
              (cond clause1 clause2 ***)))))
     ((cond (test)) test)
     ((cond (test) clause1 clause2 ***)
@@ -308,9 +314,6 @@
 ;; GCD
 (defsynonymclfun GCD)
 
-;; IF
-(defmacro IF (pred then &optional *else)
-  `(cl:if ,pred ,then ,*else))
 
 ;; LAMBDA
 (cl:eval-when (:compile-toplevel :load-toplevel :execute)
@@ -343,7 +346,8 @@
   (dolist (x binds)
     (unless (= 2(length x))
       (error "malformed NAMED-LET variable spec: ~S" x)))
-  `(labels ((,name ,(mapcar #'cl:first binds) ,@body))
+  `(labels ((,name ,(mapcar #'cl:first binds) 
+              (rnrs:let () ,@body)))
      (cl:declare (cl:optimize (cl:debug 1) (cl:space 3)))
      (,name ,@(mapcar #'cl:second binds))))
 

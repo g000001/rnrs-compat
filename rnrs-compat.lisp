@@ -114,9 +114,7 @@
        :return (car e)))
 
 ;; BEGIN
-(defmacro BEGIN (&body body)
-  `(progn ,@body))
-
+;;; -> base
 
 ;; BOOLEAN?
 (defun BOOLEAN? (obj)

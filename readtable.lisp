@@ -11,8 +11,13 @@
 
 (cl:defun read-list* (stream ignore)
   (cl:case (cl:peek-char t stream)
-    ((#\_) (cl:read-char stream)
-     `(cl:funcall ,@(read-list stream ignore)))
+    ((#\_) 
+     (cl:read-char stream)
+     (cl:case (cl:peek-char nil stream)
+       ((#\Space #\Tab #\Newline #\Return)
+        (cl:read-char stream)
+        (cons 'rnrs::_ (read-list stream ignore)))
+       (cl:otherwise `(cl:funcall ,@(read-list stream ignore)))))
     (otherwise
      (read-list stream ignore) )))
 

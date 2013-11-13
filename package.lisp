@@ -8,7 +8,7 @@
   (:intern :loop)
   (:import-from :keyword :else)
   (:export
-   :* :+ :- :|...| :/  :< :<= := :=> :> :>= :abs :acos
+   :_ :* :+ :- :|...| :/  :< :<= := :=> :> :>= :abs :acos
    :and :angle :append :apply :asin :assoc :assq :assv :atan :begin
    :boolean? :caar :cadr :call-with-current-continuation :call-with-input-file
    :call-with-output-file :call-with-values :car :case :cdddar :cddddr :cdr

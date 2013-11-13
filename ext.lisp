@@ -1,21 +1,22 @@
 (cl:in-package :rnrs-compat-internal)
 
+
 (defmacro define-function (name-args &body body)
-  (if (cl:consp name-args)
-      (cl:destructuring-bind (name . args)
-                             name-args
-        `(defun ,name ,(to-proper-lambda-list args)
-           ,@body))
-      `(progn
-         (eval-when (:compile-toplevel :load-toplevel :execute)
-           (setf (fdefinition ',name-args)
-                 (function cl:values) ))
-         (setf (fdefinition ',name-args)
-               ,(car body) ))))
+  (cl:if (cl:consp name-args)
+         (cl:destructuring-bind (name . args)
+              name-args
+           `(defun ,name ,(to-proper-lambda-list args)
+              ,@body))
+         `(progn
+            (eval-when (:compile-toplevel :load-toplevel :execute)
+              (setf (fdefinition ',name-args)
+                    (function cl:values) ))
+            (setf (fdefinition ',name-args)
+                  ,(car body) ))))
 
 
 (defmacro with-local-define-function (&body defines-body)
-  (or (cl:member :in defines-body) (error "no body"))
+  (cl:or (cl:member :in defines-body) (error "no body"))
   (cl:let* ((body-pos (cl:position :in defines-body))
             (defines  (cl:subseq defines-body 0 body-pos))
             (body     (cl:subseq defines-body (cl:1+ body-pos))) )
@@ -30,10 +31,10 @@
 
 
 (defmacro with-local-define-variable (&body defines-body)
-  (or (cl:member :in defines-body) (error "no body"))
+  (cl:or (cl:member :in defines-body) (error "no body"))
   (cl:let* ((body-pos (cl:position :in defines-body))
-         (defines  (cl:subseq defines-body 0 body-pos))
-         (body     (cl:subseq defines-body (cl:1+ body-pos))) )
+            (defines  (cl:subseq defines-body 0 body-pos))
+            (body     (cl:subseq defines-body (cl:1+ body-pos))) )
     (cl:loop
        :for (nil v bo) :in defines
        :collect v :into vars
@@ -52,23 +53,23 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun process-scheme-body* (exps &optional name)
     (labels ((defs+exps (body exps defs decls)
-                 (if (endp body)
-                     (values (reverse exps) (reverse defs) (reverse decls))
-                     (typecase (car body)
-                       ((cl:cons definition-operator cl:*)
-                        (defs+exps (cdr body) exps (cons (car body) defs) decls))
-                       ((cl:cons (eql cl:declare) cl:*)
-                        (defs+exps (cdr body) exps defs (cons (car body) decls)))
-                       (otherwise 
-                        (exps (cdr body) (cons (car body) exps) defs decls)))))
+                 (cl:if (endp body)
+                        (values (reverse exps) (reverse defs) (reverse decls))
+                        (typecase (car body)
+                          ((cl:cons definition-operator cl:*)
+                           (defs+exps (cdr body) exps (cons (car body) defs) decls))
+                          ((cl:cons (eql cl:declare) cl:*)
+                           (defs+exps (cdr body) exps defs (cons (car body) decls)))
+                          (otherwise 
+                           (exps (cdr body) (cons (car body) exps) defs decls)))))
              (exps (body exps defs decls)
-               (if (endp body)
-                   (values (reverse exps) (reverse defs) (reverse decls))
-                   (typecase (car body)
-                     ((cl:cons definition-operator cl:*)
-                      (cl:error "~:[~;~:*~A: ~]no expression after a sequence of internal definitions" name))
-                     (otherwise 
-                      (exps (cdr body) (cons (car body) exps) defs decls))))))
+               (cl:if (endp body)
+                      (values (reverse exps) (reverse defs) (reverse decls))
+                      (typecase (car body)
+                        ((cl:cons definition-operator cl:*)
+                         (cl:error "~:[~;~:*~A: ~]no expression after a sequence of internal definitions" name))
+                        (otherwise 
+                         (exps (cdr body) (cons (car body) exps) defs decls))))))
       (defs+exps exps '() '() '() )))
 
   

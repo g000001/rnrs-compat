@@ -7,8 +7,8 @@
   :depends-on (:mbe :quasiquote1)
   :components ((:file "package")
                (:file "package-after")
-               (:file "base")
                (:file "ext")
+               (:file "base")
                (:file "rnrs-compat")
                (:file "readtable")))
 
