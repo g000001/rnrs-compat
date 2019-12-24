@@ -42,9 +42,11 @@
           (defun ,name (,@(restify args))
             ,@(@expand-internal-define body)))))
     (cl:symbol 
-     `(eval-when (:compile-toplevel :load-toplevel :execute)
-        (setf (symbol-function ',name&args) 
-              ,@body)))))
+     (if (and (null (cdr body)) (constantp (car body)))
+         `(define-symbol-macro ,name&args ,(car body))
+         `(eval-when (:compile-toplevel :load-toplevel :execute)
+            (setf (symbol-function ',name&args) 
+                  ,(car body)))))))
 
 
 #|(defmacro define (name&args &body body &environment env)
@@ -231,7 +233,7 @@
 
 
 ;; CHAR>?
-(defsynonymfun CHAR? cl:characterp)
+(defsynonymfun CHAR>? cl:char>)
 
 
 ;; CHAR?

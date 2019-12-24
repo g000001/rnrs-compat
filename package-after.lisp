@@ -10,7 +10,10 @@
    :log :cadr :string :> :expt :char-upcase :cdddar :>= :tan :write :vector :let
    :caar :let* := :apply :rationalize :cddddr :member :make-string :length :acos
    :* :< :not :car :+ :load :cond :append :sqrt :lcm :truncate :read :case :and
-   :reverse )
+   :reverse 
+   . (:CAR :CDR :CAAR :CADR :CDAR :CDDR :CAAAR :CAADR :CADAR :CADDR :CDAAR :CDADR
+      :CDDAR :CDDDR :CAAAAR :CAAADR :CAADAR :CAADDR :CADAAR :CADADR :CADDAR
+      :CADDDR :CDAAAR :CDAADR :CDADAR :CDADDR :CDDAAR :CDDADR :CDDDAR :CDDDDR))
   (:shadowing-import-from :rnrs-compat :loop)
   (:export :define-function
            :with-local-define-function

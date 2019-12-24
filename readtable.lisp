@@ -7,7 +7,8 @@
   #+sbcl (sb-impl::read-list stream ignore)
   #+lispworks (system::read-list stream ignore)
   #+allegro (excl::read-list stream ignore )
-  #+ccl (ccl::read-list stream))
+  #+ccl (ccl::read-list stream)
+  #+abcl (sys::read-list stream ignore))
 
 (cl:defun read-list* (stream ignore)
   (cl:case (cl:peek-char t stream)

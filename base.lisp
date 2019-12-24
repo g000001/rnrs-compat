@@ -43,13 +43,14 @@
 
 (defmacro defsynonymfun (name fcn)
   `(progn
-     (declaim (inline ,name))
+     #-lispworks (declaim (inline ,name))
      (cl:setf (cl:fdefinition ',name) (function ,fcn))))
 
 (defmacro defsynonymclfun (name)
   `(progn
-     (declaim (inline ,name))
-     (cl:setf (cl:fdefinition ',name) (function ,(intern (cl:string name) :cl)))))
+     #-lispworks (declaim (inline ,name))
+     (cl:setf (cl:fdefinition ',name)
+              (function ,(intern (cl:string name) :cl)))))
 
 (defmacro defun-inline (name (&rest args) &body body)
   `(progn
@@ -150,15 +151,43 @@
   `(progn ,@body))
 
 
-;; CAAR
-(defsynonymclfun CAAR)
-
-;; CADR
-(defsynonymclfun CADR)
-
 ;; CAR
-(defun CAR (list)
+(defun-inline CAR (list)
   (cl:car (the cl:cons list)))
+
+
+(PROGN
+  ;; (DEFSYNONYMCLFUN CAR)
+  ;; (DEFSYNONYMCLFUN CDR)
+  (DEFSYNONYMCLFUN CAAR)
+  (DEFSYNONYMCLFUN CADR)
+  (DEFSYNONYMCLFUN CDAR)
+  (DEFSYNONYMCLFUN CDDR)
+  (DEFSYNONYMCLFUN CAAAR)
+  (DEFSYNONYMCLFUN CAADR)
+  (DEFSYNONYMCLFUN CADAR)
+  (DEFSYNONYMCLFUN CADDR)
+  (DEFSYNONYMCLFUN CDAAR)
+  (DEFSYNONYMCLFUN CDADR)
+  (DEFSYNONYMCLFUN CDDAR)
+  (DEFSYNONYMCLFUN CDDDR)
+  (DEFSYNONYMCLFUN CAAAAR)
+  (DEFSYNONYMCLFUN CAAADR)
+  (DEFSYNONYMCLFUN CAADAR)
+  (DEFSYNONYMCLFUN CAADDR)
+  (DEFSYNONYMCLFUN CADAAR)
+  (DEFSYNONYMCLFUN CADADR)
+  (DEFSYNONYMCLFUN CADDAR)
+  (DEFSYNONYMCLFUN CADDDR)
+  (DEFSYNONYMCLFUN CDAAAR)
+  (DEFSYNONYMCLFUN CDAADR)
+  (DEFSYNONYMCLFUN CDADAR)
+  (DEFSYNONYMCLFUN CDADDR)
+  (DEFSYNONYMCLFUN CDDAAR)
+  (DEFSYNONYMCLFUN CDDADR)
+  (DEFSYNONYMCLFUN CDDDAR)
+  (DEFSYNONYMCLFUN CDDDDR))
+
 
 ;; CASE
 (defmacro CASE (item &body clauses)
@@ -196,7 +225,7 @@
 (defsynonymclfun CDDDDR)
 
 ;; CDR
-(defun CDR (list)
+(defun-inline CDR (list)
   (cl:cdr (the cl:cons list)))
 
 ;; CEILING

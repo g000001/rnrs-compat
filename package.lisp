@@ -10,8 +10,8 @@
   (:export
    :_ :* :+ :- :|...| :/  :< :<= := :=> :> :>= :abs :acos
    :and :angle :append :apply :asin :assoc :assq :assv :atan :begin
-   :boolean? :caar :cadr :call-with-current-continuation :call-with-input-file
-   :call-with-output-file :call-with-values :car :case :cdddar :cddddr :cdr
+   :boolean? :call-with-current-continuation :call-with-input-file
+   :call-with-output-file :call-with-values :case 
    :ceiling :char->integer :char-alphabetic? :char-ci<=? :char-ci<? :char-ci=?
    :char-ci>=? :char-ci>? :char-downcase :char-lower-case? :char-numeric?
    :char-ready? :char-upcase :char-upper-case? :char-whitespace? :char<=? :char<?
@@ -38,6 +38,10 @@
    :symbol? :syntax-rules :tan :truncate
    :values :vector :vector->list :vector-fill! :vector-length :vector-ref
    :vector-set! :vector? :with-input-from-file :with-output-to-file :write
-   :write-char :zero?))
+   :write-char :zero?
+   . (:CAR :CDR :CAAR :CADR :CDAR :CDDR :CAAAR :CAADR :CADAR :CADDR :CDAAR :CDADR
+    :CDDAR :CDDDR :CAAAAR :CAAADR :CAADAR :CAADDR :CADAAR :CADADR :CADDAR
+    :CADDDR :CDAAAR :CDAADR :CDADAR :CDADDR :CDDAAR :CDDADR :CDDDAR :CDDDDR)))
+
 
 ;;; eof

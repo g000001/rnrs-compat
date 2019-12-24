@@ -95,7 +95,14 @@
   
   
   (defun null-lexenv-p (env)
-    #+sbcl (sb-c::null-lexenv-p env)))
-
+    #+allegro (sys::empty-lexical-environment-p env)
+    #+sbcl (sb-c::null-lexenv-p env)
+    #+ccl (cl:let ((env (ccl::lexenv.parent-env env)))
+            (cl:or (cl:eq env (ccl::lexenv.parent-env nil))
+                   (cl:let ((env (ccl::lexenv.parent-env env)))
+                     (cl:and (cl:consp env)
+                             (cl:eq 'cl:compile-file (cl:car env))))))
+    #+abcl (sys::empty-environment-p env)
+    #+lispworks7 (cl:not (system::non-null-environment-p env))))
 
 ;;; eof
