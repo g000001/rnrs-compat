@@ -1,1 +1,7 @@
-This is the stub README.org for the "rnrs-compat" project.
+## RnRS compatibility package for Common Lisp
+
+* License: Unlicense
+
+
+
+

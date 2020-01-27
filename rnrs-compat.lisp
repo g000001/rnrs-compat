@@ -2,10 +2,6 @@
 
 (cl:in-package :rnrs-compat-internal)
 
-(def-suite rnrs-compat)
-
-(in-suite rnrs-compat)
-
 ;;; define
 (defun CHECK-ARG-to-DECLARE (expr)
   (destructuring-bind (ignore pred var name) expr
