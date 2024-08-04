@@ -78,7 +78,7 @@
 
 
 (defmacro define (name&args &body body &environment env)
-  (if (null-lexenv-p env)
+  (if (or (null env) (null-lexenv-p env))
       `(global-define ,name&args ,@body)
       `(internal-define ,name&args ,@body)))
 
@@ -553,7 +553,9 @@
 
 ;; SET!
 (defmacro set! (var val)
-  `(setq ,var ,val))
+  (typecase var
+    (symbol `(cl:setq ,var ,val))
+    (cons `(cl:setf ,var ,val))))
 
 
 ;; SET-CAR!

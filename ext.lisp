@@ -103,6 +103,6 @@
                      (cl:and (cl:consp env)
                              (cl:eq 'cl:compile-file (cl:car env))))))
     #+abcl (sys::empty-environment-p env)
-    #+lispworks7 (cl:not (system::non-null-environment-p env))))
+    #+lispworks7+ (cl:not (system::non-null-environment-p env))))
 
 ;;; eof
