@@ -82,8 +82,10 @@
 
 ;; EQUAL?
 (defun-inline equal? (x y)
-  (equal x y))
-
+  (typecase x
+    ((cl:and cl:vector (cl:not cl:string))
+     (equalp x y))
+    (T (equal x y))))
 
 #|(format t "~{;; ~A~%(defsynonymclfun ~:*~A)~2%~}"
         (sort (copy-list  *intersection-of-cl-r5rs-symbols*) #'string<))|#
