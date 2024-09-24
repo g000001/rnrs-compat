@@ -681,9 +681,9 @@
 
 
 ;; VECTOR->LIST
-(defun-inline vector->list (obj)
+(defun-inline vector->list (obj &optional (start 0) end)
   (declare (cl:vector obj))
-  (cl:coerce obj 'cl:list))
+  (cl:coerce (subseq obj start end) 'cl:list))
 
 
 ;; VECTOR-FILL!

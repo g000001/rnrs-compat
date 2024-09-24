@@ -137,11 +137,11 @@
 (defsynonymclfun ASIN)
 
 ;; ASSOC
-(defun ASSOC (item alist)
+(defun ASSOC (item alist &optional (compare #'equal?))
   (cl:loop
      :for e :on alist
      :when (and (cl:consp (car e))
-                (equal? item (caar e)))
+                (funcall compare item (caar e)))
        :return (car e)))
 
 ;; ATAN
