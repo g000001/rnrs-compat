@@ -189,7 +189,8 @@
 
 
 ;; CHAR-LOWER-CASE?
-(defsynonymfun CHAR-LOWER-CASE? cl:lower-case-p)
+(defun-inline CHAR-LOWER-CASE? (c)
+  (cl-unicode:has-property c 'cl-unicode-names::ll))
 
 
 ;; CHAR-NUMERIC?
@@ -203,7 +204,8 @@
 
 
 ;; CHAR-UPPER-CASE?
-(defsynonymfun CHAR-UPPER-CASE? cl:upper-case-p)
+(defun-inline CHAR-UPPER-CASE? (c)
+  (cl-unicode:has-property c 'cl-unicode-names::lu))
 
 
 ;; CHAR-WHITESPACE?

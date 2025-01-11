@@ -234,10 +234,13 @@
 (defsynonymclfun CEILING)
 
 ;; CHAR-DOWNCASE
-(defsynonymclfun CHAR-DOWNCASE)
+(defun-inline CHAR-DOWNCASE (ch)
+  (cl-unicode:lowercase-mapping ch))
 
 ;; CHAR-UPCASE
-(defsynonymclfun CHAR-UPCASE)
+(defun-inline CHAR-UPCASE (ch)
+  (cl-unicode:uppercase-mapping ch))
+
 
 ;; COND
 ;; (defsynonymclfun COND)

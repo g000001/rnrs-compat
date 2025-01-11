@@ -4,7 +4,7 @@
 
 (defsystem :rnrs-compat
   :serial t
-  :depends-on (:mbe :quasiquote1)
+  :depends-on (:mbe :quasiquote1 :cl-unicode)
   :components ((:file "package")
                ;;(:file "package-after")
                (:file "ext")
